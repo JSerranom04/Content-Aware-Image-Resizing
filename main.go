@@ -24,20 +24,29 @@ func readImage(name string) [][]MatrixComponent {
 
 	N := data.Bounds().Max.X - data.Bounds().Min.X
 	M := data.Bounds().Max.Y - data.Bounds().Min.Y
-	var imageRet [][]MatrixComponent
+	imageRet := make([][]MatrixComponent, N)
+	for i := range imageRet {
+		imageRet[i] = make([]MatrixComponent, M)
+	}
 	for i := 0; i < N; i++ {
 		for j := 0; j < M; j++ {
+			r, g, b, _ := data.At(i, j).RGBA()
+			imageRet[i][j].r = int(r)
+			imageRet[i][j].g = int(g)
+			imageRet[i][j].b = int(b)
+			imageRet[i][j].brightness = int(r + g + b)
 		}
 	}
 	return imageRet
 }
 
-func printImage(img image.Image) {
+// Taken from https://golangdocs.com/golang-image-processing
+func printImage(data image.Image) {
 	levels := []string{" ", "░", "▒", "▓", "█"}
 
-	for y := img.Bounds().Min.Y; y < img.Bounds().Max.Y; y++ {
-		for x := img.Bounds().Min.X; x < img.Bounds().Max.X; x++ {
-			c := color.GrayModel.Convert(img.At(x, y)).(color.Gray)
+	for y := data.Bounds().Min.Y; y < data.Bounds().Max.Y; y++ {
+		for x := data.Bounds().Min.X; x < data.Bounds().Max.X; x++ {
+			c := color.GrayModel.Convert(data.At(x, y)).(color.Gray)
 			level := c.Y / 51 // 51 * 5 = 255
 			if level == 5 {
 				level--
@@ -53,15 +62,14 @@ func main() {
 	if len(os.Args) != 4 {
 		fmt.Println("LO HAS EJECUTADO MAL, ESTUPIDO!")
 	}
-	seamNumber := os.Args[1]
+	//seamNumber := os.Args[1]
 	fileIn := os.Args[2]
-	fileOut := os.Args[3]
+	//fileOut := os.Args[3]
 
 	// We open the image in order to read the matrix and convert it to the image format
 	// [i,j] (r,g,b,r+g+b)
 	Image := readImage(fileIn)
+	//readImage(fileIn)
 
-	var recurrencyTable [][]int
-
-	fmt.Println(Image, recurrencyTable, seamNumber, fileIn, fileOut)
+	fmt.Println(Image)
 }
