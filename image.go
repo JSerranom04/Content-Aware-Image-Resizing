@@ -1,1 +1,97 @@
 package main
+
+import (
+	"fmt"
+	"image"
+	"image/color"
+	"image/png"
+	"os"
+)
+
+// Reads a PNG from the file "name" and return the NRGBA+Bightnes values of the image
+func readImage(name string) [][]MatrixComponent {
+	file, err := os.Open(name)
+	if err != nil {
+		fmt.Println("Error opening image", err)
+		os.Exit(1)
+	}
+	defer file.Close()
+	if err != nil {
+		fmt.Println("Error opening image", err)
+		os.Exit(1)
+	}
+	data, err := png.Decode(file)
+	if err != nil {
+		fmt.Println("Error decoding image", err)
+		os.Exit(1)
+	}
+
+	N := data.Bounds().Max.X - data.Bounds().Min.X
+	M := data.Bounds().Max.Y - data.Bounds().Min.Y
+	imageRet := make([][]MatrixComponent, N)
+	for i := 0; i < N; i++ {
+		imageRet[i] = make([]MatrixComponent, M)
+		for j := 0; j < M; j++ {
+			// Very important, we need the NRGBA values not the RGBA values
+			// Using At(_,_).RGBA() won't work
+			c := data.At(i, j).(color.NRGBA)
+			imageRet[i][j].r = int(c.R)
+			imageRet[i][j].g = int(c.G)
+			imageRet[i][j].b = int(c.B)
+			imageRet[i][j].a = int(c.A)
+			// Brightness is set to the sum of rgb
+			imageRet[i][j].brightness = int(c.R + c.G + c.B)
+		}
+	}
+	return imageRet
+}
+
+// Taken from https://golangdocs.com/golang-image-processing
+func printImage(data image.Image) {
+	levels := []string{" ", "░", "▒", "▓", "█"}
+
+	for y := data.Bounds().Min.Y; y < data.Bounds().Max.Y; y++ {
+		for x := data.Bounds().Min.X; x < data.Bounds().Max.X; x++ {
+			c := color.GrayModel.Convert(data.At(x, y)).(color.Gray)
+			level := c.Y / 51 // 51 * 5 = 255
+			if level == 5 {
+				level--
+			}
+			fmt.Print(levels[level])
+		}
+		fmt.Print("\n")
+	}
+}
+
+// Given the new file to write "name" and the NRGBA values of the image it creates/overrides the new image
+func writeImage(name string, imageMatrix [][]MatrixComponent) {
+	// imageMatrix must be a rectangular 2d matrix
+	N := len(imageMatrix)
+	M := len(imageMatrix[0])
+	newBounds := image.Rect(0, 0, N, M)
+	img := image.NewNRGBA(newBounds)
+	for i := 0; i < N; i++ {
+		for j := 0; j < M; j++ {
+			// It writes the unprocesed NRGBA values with a 100% lossless write
+			img.Set(i, j, color.NRGBA{
+				R: uint8(imageMatrix[i][j].r),
+				G: uint8(imageMatrix[i][j].g),
+				B: uint8(imageMatrix[i][j].b),
+				A: uint8(imageMatrix[i][j].a),
+			})
+		}
+	}
+	newImageFile, err := os.Create(name)
+	defer newImageFile.Close()
+	if err != nil {
+		fmt.Println("Error creating file")
+		os.Exit(1)
+	}
+	err = png.Encode(newImageFile, img)
+	if err != nil {
+		newImageFile.Close()
+		fmt.Println("Error encoding new file", err)
+		os.Exit(1)
+	}
+
+}
