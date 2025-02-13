@@ -1,0 +1,3 @@
+module ALGORITMIA_BASICA_P2
+
+go 1.23.1
