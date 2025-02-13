@@ -36,7 +36,7 @@ func EcuRecurrencyMatrix(Image [][]MatrixComponent) [][]MatrixComponent {
 	N := len(Image)
 	M := len(Image)
 	var memory [][]int
-	
+
 	for i := 0; i < N; i++ {
 		for j := 0; j < M; j++ {
 			EcuRecurrency(i, j, memory, Image)

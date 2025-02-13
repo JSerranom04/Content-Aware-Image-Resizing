@@ -25,19 +25,18 @@ func getValue(x, y int, Image [][]MatrixComponent) int {
 
 // Gives the value of the given matrix components in variables after checking if
 // they are null and if so, it returns a 0 in that value
-func GiveMeTheMatrixComponents(i int, j int, Image [][]MatrixComponent) (int, int, int, int, int, int, int, int, int) {
+func GiveMeTheMatrixComponents(i int, j int, Image [][]MatrixComponent) (int, int, int, int, int, int, int, int) {
 
 	a := getValue(i-1, j-1, Image)
 	b := getValue(i-1, j, Image)
 	c := getValue(i-1, j+1, Image)
 	d := getValue(i, j-1, Image)
-	e := getValue(i, j, Image)
 	f := getValue(i, j+1, Image)
 	g := getValue(i+1, j-1, Image)
 	h := getValue(i+1, j, Image)
 	ii := getValue(i+1, j+1, Image) // Cambié el nombre para evitar conflicto con `i` del parámetro
 
-	return a, b, c, d, e, f, g, h, ii
+	return a, b, c, d, f, g, h, ii
 }
 
 // Having this matrix
@@ -49,7 +48,7 @@ func GiveMeTheMatrixComponents(i int, j int, Image [][]MatrixComponent) (int, in
 // energy = sqrt(energiax²+energiay²)
 // Returns the energy of the pixel at coordinates (i, j)
 func PixelEnergy(i int, j int, Image [][]MatrixComponent) int {
-	a, b, c, d, e, f, g, h, i := GiveMeTheMatrixComponents(i, j, Image)
+	a, b, c, d, f, g, h, i := GiveMeTheMatrixComponents(i, j, Image)
 	xenergy := a + 2*d + g - c - 2*f - i
 	yenergy := a + 2*b + c - g - 2*h - i
 	energy := int(math.Sqrt(float64(xenergy*xenergy + yenergy*yenergy)))
