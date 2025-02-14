@@ -57,6 +57,7 @@ func PixelEnergy(i int, j int, Image [][]MatrixComponent) int {
 }
 
 // Returns the brightness of the pixel at coordinates (i, j)
+// Modular in case we want to change the brightnes formula
 func PixelBrightness(i int, j int, image [][]MatrixComponent) int {
 	return image[i][j].r + image[i][j].g + image[i][j].b
 }
