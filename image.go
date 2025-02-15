@@ -37,7 +37,7 @@ func readImage(name string) [][]MatrixComponent {
 				r, g, b, a = nrgba.R, nrgba.G, nrgba.B, nrgba.A
 			} else {
 				// Si no es NRGBA, usar el método RGBA() y convertir
-				r32, g32, b32, a32 := data.At(i, j).RGBA()
+				r32, g32, b32, a32 := data.At(j, i).RGBA()
 				r = uint8(r32 >> 8)
 				g = uint8(g32 >> 8)
 				b = uint8(b32 >> 8)
