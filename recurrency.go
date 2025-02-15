@@ -15,7 +15,7 @@ func Min(a int, b int, c int) int {
 // c(i, 1) = e(i, 1)
 func EcuRecurrency(i int, j int, memory *[][]int, Image [][]MatrixComponent) int {
 	// If the pixel recurrency function has already been calculated
-	if (*memory)[i][j] != 0 {
+	if (*memory)[i][j] != -1 {
 		return (*memory)[i][j]
 	}
 	ePixel := PixelEnergy(i, j, Image)
@@ -52,6 +52,9 @@ func EcuRecurrencyMatrixInitial(Image [][]MatrixComponent) [][]int {
 	memory := make([][]int, N)
 	for i := 0; i < N; i++ {
 		memory[i] = make([]int, M)
+		for j := 0; j < M; j++ {
+			memory[i][j] = -1
+		}
 	}
 	// Calculate recurrency values for the whole image
 	for i := 0; i < N; i++ {
@@ -71,6 +74,9 @@ func EcuRecurrencyMatrix(matrix [][]int, seam []int, Image [][]MatrixComponent) 
 	memory := make([][]int, N)
 	for i := 0; i < N; i++ {
 		memory[i] = make([]int, M)
+		for j := 0; j < M; j++ {
+			memory[i][j] = -1
+		}
 		copy(memory[i][:max(0, seam[0]-i)], matrix[i][:max(0, seam[0]-i)])
 		copy(memory[i][min(M, seam[0]+1+i):M], matrix[i][min(M, seam[0]+1+i):M])
 	}
