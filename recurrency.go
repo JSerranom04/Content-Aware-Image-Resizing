@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 // Returns the lowest number
 func Min(a int, b int, c int) int {
 	if a < b && a < c {
@@ -46,7 +44,7 @@ func EcuRecurrency(i int, j int, memory *[][]int, Image [][]MatrixComponent) int
 	return min + ePixel
 }
 
-func EcuRecurrencyMatrix(Image [][]MatrixComponent) [][]int {
+func EcuRecurrencyMatrixInitial(Image [][]MatrixComponent) [][]int {
 	// Seting bounds
 	N := len(Image)
 	M := len(Image[0])
@@ -57,8 +55,29 @@ func EcuRecurrencyMatrix(Image [][]MatrixComponent) [][]int {
 	}
 	// Calculate recurrency values for the whole image
 	for i := 0; i < N; i++ {
-		fmt.Println("Calculating recurrency matrix:", i, "/", N)
+		//fmt.Println("Calculating recurrency matrix:", i, "/", N)
 		for j := 0; j < M; j++ {
+			EcuRecurrency(i, j, &memory, Image)
+		}
+	}
+	return memory
+}
+
+func EcuRecurrencyMatrix(matrix [][]int, seam []int, Image [][]MatrixComponent) [][]int {
+	// Seting bounds
+	N := len(Image)
+	M := len(Image[0])
+	// Initialize the memomory matrix
+	memory := make([][]int, N)
+	for i := 0; i < N; i++ {
+		memory[i] = make([]int, M)
+		copy(memory[i][:max(0, seam[0]-i)], matrix[i][:max(0, seam[0]-i)])
+		copy(memory[i][min(M, seam[0]+1+i):M], matrix[i][min(M, seam[0]+1+i):M])
+	}
+	// Calculate recurrency values for the whole image
+	for i := 0; i < N; i++ {
+		//fmt.Println("Calculating recurrency matrix:", i, "/", N)
+		for j := max(0, seam[0]-i); j < min(M, seam[0]+1+i); j++ {
 			EcuRecurrency(i, j, &memory, Image)
 		}
 	}

@@ -37,19 +37,22 @@ func main() {
 	N := len(imageMatrix)
 	M := len(imageMatrix[0])
 
+	recurrencyMatrix := EcuRecurrencyMatrixInitial(imageMatrix)
+	log.Printf("Energy matrix calculated")
+
 	// Process all seams
 	for i := 0; i < seamNumber; i++ {
 		log.Printf("Processing seam %d of %d", i+1, seamNumber)
-		
-		energyMatrix := EcuRecurrencyMatrix(imageMatrix)
-		log.Printf("Energy matrix calculated")
-		
-		seam := FindMinSeam(energyMatrix)
-		log.Printf("Seam found: %v", seam)
-		
-		imageMatrix = RemoveSeam(imageMatrix, seam)
-		log.Printf("Seam removed. Current dimensions: %dx%d", 
-			len(imageMatrix), len(imageMatrix[0]))
+
+		seam := FindMinSeam(recurrencyMatrix)
+
+		imageMatrix = RemoveSeamFromImage(imageMatrix, seam)
+		//log.Printf("Seam removed. Current dimensions: %dx%d", len(imageMatrix), len(imageMatrix[0]))
+
+		if i < seamNumber-1 {
+			recurrencyMatrix = EcuRecurrencyMatrix(recurrencyMatrix, seam, imageMatrix)
+			//recurrencyMatrix = EcuRecurrencyMatrixInitial(imageMatrix)
+		}
 	}
 
 	// Save final image after all seams have been removed

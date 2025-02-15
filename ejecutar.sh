@@ -12,11 +12,19 @@ mkdir -p "$3"
 # Compilar el programa
 go build -o costuras *.go
 
+# Captura el tiempo inicial en milisegundos
+start=$(date +%s%3N) 
+
 # Ejecutar el programa
 ./costuras "$1" "$2" "$3"
 
-# Medir tiempo de ejecución
-time ./costuras "$1" "$2" "$3"
+# Captura el tiempo final en milisegundos
+end=$(date +%s%3N)   
+
+# Calcula el tiempo medido en ms
+exe_time="$((end - start)) ms"
+
+echo Ejecutado en "$exe_time"
 
 # Verificar resultado
 if [ $? -eq 0 ]; then
