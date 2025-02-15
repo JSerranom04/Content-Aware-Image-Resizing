@@ -16,10 +16,7 @@ func readImage(name string) [][]MatrixComponent {
 		os.Exit(1)
 	}
 	defer file.Close()
-	if err != nil {
-		fmt.Println("Error opening image", err)
-		os.Exit(1)
-	}
+
 	data, err := png.Decode(file)
 	if err != nil {
 		fmt.Println("Error decoding image", err)
@@ -29,18 +26,29 @@ func readImage(name string) [][]MatrixComponent {
 	N := data.Bounds().Max.X - data.Bounds().Min.X
 	M := data.Bounds().Max.Y - data.Bounds().Min.Y
 	imageRet := make([][]MatrixComponent, N)
+	
 	for i := 0; i < N; i++ {
 		imageRet[i] = make([]MatrixComponent, M)
 		for j := 0; j < M; j++ {
-			// Very important, we need the NRGBA values not the RGBA values
-			// Using At(_,_).RGBA() won't work
-			c := data.At(i, j).(color.NRGBA)
-			imageRet[i][j].r = int(c.R)
-			imageRet[i][j].g = int(c.G)
-			imageRet[i][j].b = int(c.B)
-			imageRet[i][j].a = int(c.A)
-			// Brightness is set to the sum of rgb
-			imageRet[i][j].brightness = int(c.R + c.G + c.B)
+			var r, g, b, a uint8
+			
+			// Intentar convertir a NRGBA primero
+			if nrgba, ok := data.At(i, j).(color.NRGBA); ok {
+				r, g, b, a = nrgba.R, nrgba.G, nrgba.B, nrgba.A
+			} else {
+				// Si no es NRGBA, usar el método RGBA() y convertir
+				r32, g32, b32, a32 := data.At(i, j).RGBA()
+				r = uint8(r32 >> 8)
+				g = uint8(g32 >> 8)
+				b = uint8(b32 >> 8)
+				a = uint8(a32 >> 8)
+			}
+			
+			imageRet[i][j].r = int(r)
+			imageRet[i][j].g = int(g)
+			imageRet[i][j].b = int(b)
+			imageRet[i][j].a = int(a)
+			imageRet[i][j].brightness = int(r) + int(g) + int(b)
 		}
 	}
 	return imageRet

@@ -34,9 +34,10 @@ func main() {
 	// Read the initial image
 	log.Printf("Reading image: %s", fileIn)
 	imageMatrix := readImage(fileIn)
-	log.Printf("Image dimensions: %dx%d", len(imageMatrix), len(imageMatrix[0]))
+	N := len(imageMatrix)
+	M := len(imageMatrix[0])
 
-	// Process each seam
+	// Process all seams
 	for i := 0; i < seamNumber; i++ {
 		log.Printf("Processing seam %d of %d", i+1, seamNumber)
 		
@@ -47,11 +48,14 @@ func main() {
 		log.Printf("Seam found: %v", seam)
 		
 		imageMatrix = RemoveSeam(imageMatrix, seam)
-		log.Printf("Seam removed. New dimensions: %dx%d", 
+		log.Printf("Seam removed. Current dimensions: %dx%d", 
 			len(imageMatrix), len(imageMatrix[0]))
-		
-		intermediateFile := filepath.Join(resultsDir, fmt.Sprintf("resultado_%d.png", i+1))
-		writeImage(intermediateFile, imageMatrix)
-		log.Printf("Intermediate image saved: %s", intermediateFile)
 	}
+
+	// Save final image after all seams have been removed
+	finalFile := filepath.Join(resultsDir, "resultado_final.png")
+	writeImage(finalFile, imageMatrix)
+	log.Printf("Final image saved: %s", finalFile)
+	log.Printf("Initial image dimensions: %dx%d", N, M)
+	log.Printf("Final dimensions: %dx%d", len(imageMatrix), len(imageMatrix[0]))
 }
