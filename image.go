@@ -82,6 +82,11 @@ func writeImage(name string, imageMatrix [][]MatrixComponent) {
 		}
 	}
 	newImageFile, err := os.Create(name)
+	if err != nil {
+		fmt.Println("Error creating file")
+		os.Exit(1)
+	}
+	
 	defer newImageFile.Close()
 	if err != nil {
 		fmt.Println("Error creating file")

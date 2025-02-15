@@ -13,24 +13,34 @@ func Min(a int, b int, c int) int {
 // Recurrence function to calculate seam value
 // c(i, j) = min{c(i - 1, j - 1), c(i - 1, j), c(i - 1, j + 1)} + e(i, j)
 // c(i, 1) = e(i, 1)
-func EcuRecurrency(i int, j int, memory [][]int, Image [][]MatrixComponent) int {
+func EcuRecurrency(i int, j int, memory *[][]int, Image [][]MatrixComponent) int {
 	// If the pixel recurrency function has already been calculated
-	if memory[i][j] != 0 {
-		return memory[i][j]
+	if (*memory)[i][j] != 0 {
+		return (*memory)[i][j]
 	}
-	ePixel := PixelEnergy(i, 1, Image)
+	ePixel := PixelEnergy(i, j, Image)
 	// Base case, pixel is on top row
-	if j == 1 {
+	if i == 0 {
 		return ePixel
 	}
 	// We calcule the minimum out of the range of the cut
-	upleft := EcuRecurrency(i-1, j-1, memory, Image)
-	left := EcuRecurrency(i-1, j, memory, Image)
-	botomleft := EcuRecurrency(i-1, j+1, memory, Image)
-	min := min(upleft, left, botomleft)
+	M := len(Image[0])
+	var upleft, left, bottomleft int
+	if j > 0 {
+		upleft = EcuRecurrency(i-1, j-1, memory, Image)
+	} else {
+		upleft = int(^uint(0) >> 1) // Max int value
+	}
+	left = EcuRecurrency(i-1, j, memory, Image)
+	if j < M-1 {
+		bottomleft = EcuRecurrency(i-1, j+1, memory, Image)
+	} else {
+		bottomleft = int(^uint(0) >> 1) // Max int value
+	}
+	min := Min(upleft, left, bottomleft)
 
 	// We assign the minimum to the component of the new matrix
-	memory[i][j] = min + ePixel
+	(*memory)[i][j] = min + ePixel
 	return min + ePixel
 }
 
@@ -46,7 +56,7 @@ func EcuRecurrencyMatrix(Image [][]MatrixComponent) [][]int {
 	// Calculate recurrency values for the whole image
 	for i := 0; i < N; i++ {
 		for j := 0; j < M; j++ {
-			EcuRecurrency(i, j, memory, Image)
+			EcuRecurrency(i, j, &memory, Image)
 		}
 	}
 	return memory
