@@ -57,10 +57,9 @@ func EcuRecurrencyMatrix(Image [][]MatrixComponent) [][]int {
 	}
 	// Calculate recurrency values for the whole image
 	for i := 0; i < N; i++ {
+		fmt.Println("Calculating recurrency matrix:", i, "/", N)
 		for j := 0; j < M; j++ {
-			fmt.Println("We are in the recurrence function, i = ", i, " j = ", j)
 			EcuRecurrency(i, j, &memory, Image)
-			fmt.Println("We are out of the recurrence function, i = ", i, " j = ", j)
 		}
 	}
 	return memory

@@ -25,15 +25,15 @@ func readImage(name string) [][]MatrixComponent {
 
 	N := data.Bounds().Max.X - data.Bounds().Min.X
 	M := data.Bounds().Max.Y - data.Bounds().Min.Y
-	imageRet := make([][]MatrixComponent, N)
-	
-	for i := 0; i < N; i++ {
-		imageRet[i] = make([]MatrixComponent, M)
-		for j := 0; j < M; j++ {
+	imageRet := make([][]MatrixComponent, M)
+
+	for i := 0; i < M; i++ {
+		imageRet[i] = make([]MatrixComponent, N)
+		for j := 0; j < N; j++ {
 			var r, g, b, a uint8
-			
+
 			// Intentar convertir a NRGBA primero
-			if nrgba, ok := data.At(i, j).(color.NRGBA); ok {
+			if nrgba, ok := data.At(j, i).(color.NRGBA); ok {
 				r, g, b, a = nrgba.R, nrgba.G, nrgba.B, nrgba.A
 			} else {
 				// Si no es NRGBA, usar el método RGBA() y convertir
@@ -43,7 +43,7 @@ func readImage(name string) [][]MatrixComponent {
 				b = uint8(b32 >> 8)
 				a = uint8(a32 >> 8)
 			}
-			
+
 			imageRet[i][j].r = int(r)
 			imageRet[i][j].g = int(g)
 			imageRet[i][j].b = int(b)
@@ -76,12 +76,12 @@ func writeImage(name string, imageMatrix [][]MatrixComponent) {
 	// imageMatrix must be a rectangular 2d matrix
 	N := len(imageMatrix)
 	M := len(imageMatrix[0])
-	newBounds := image.Rect(0, 0, N, M)
+	newBounds := image.Rect(0, 0, M, N)
 	img := image.NewNRGBA(newBounds)
 	for i := 0; i < N; i++ {
 		for j := 0; j < M; j++ {
 			// It writes the unprocesed NRGBA values with a 100% lossless write
-			img.Set(i, j, color.NRGBA{
+			img.Set(j, i, color.NRGBA{
 				R: uint8(imageMatrix[i][j].r),
 				G: uint8(imageMatrix[i][j].g),
 				B: uint8(imageMatrix[i][j].b),
@@ -94,7 +94,7 @@ func writeImage(name string, imageMatrix [][]MatrixComponent) {
 		fmt.Println("Error creating file")
 		os.Exit(1)
 	}
-	
+
 	defer newImageFile.Close()
 	if err != nil {
 		fmt.Println("Error creating file")
