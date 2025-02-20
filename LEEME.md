@@ -19,7 +19,7 @@ Curso 2023/24
 - Go 1.20 o superior
 - Biblioteca estándar de Go (no requiere dependencias externas)
 
-### Compilación del Directorio practica2_NIA1_NIA2
+### Compilación
 
 bash
 go build -o costuras .go
@@ -32,7 +32,7 @@ bash
 Ejemplo:
 
 bash
-./costuras 5 ./pruebas/imagen.png ./resultados
+./costuras 50 ./pruebas/imagen.png ./resultados
 
 
 ### Descripción del Algoritmo
@@ -54,16 +54,25 @@ go test -v
 
 
 
-### Casos de Prueba
-El directorio `pruebas/` contiene imágenes de ejemplo para probar el programa:
+
+### Imágenes de Prueba
+El directorio `pruebas/` contiene imágenes de ejemplo:
+- boat.png: Imagen de un barco
 - water.png: Imagen de agua con áreas homogéneas
-- mountain.png: Imagen con bordes definidos
-- city.png: Imagen urbana con detalles
+- rocket.png: Imagen de un cohete
+- imagen.png: Imagen de prueba general
 
 ### Notas Adicionales
 - El programa acepta imágenes en formato PNG
 - Los resultados se guardan en el directorio especificado
 - Se muestra el progreso durante la ejecución
 - El tiempo de ejecución depende del tamaño de la imagen y número de costuras
+- La implementación incluye optimizaciones para recalcular solo las áreas afectadas por cada costura
 
-Autores: Victor Orrios Baron y Juan José Serrano Mora.
+### Ejemplo de Rendimiento
+En una imagen de 1466x1220 píxeles, reduciendo 350 costuras:
+- Dimensiones iniciales: 1466x1220
+- Dimensiones finales: 1466x870
+- Tiempo aproximado: 2-3 minutos
+
+Autores: Victor Orrios Baron y Juan José Serrano Mora
