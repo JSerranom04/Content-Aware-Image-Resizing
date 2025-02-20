@@ -1,6 +1,7 @@
 package main
 
 // FindMinSeam finds the minimum seam in the energy matrix
+// It returns the index of the pixel in each row that are in the seam
 func FindMinSeam(energyMatrix [][]int) []int {
 	N := len(energyMatrix)
 	M := len(energyMatrix[0])
@@ -40,6 +41,7 @@ func FindMinSeam(energyMatrix [][]int) []int {
 
 // RemoveSeamFromImage removes a vertical seam from the image
 func RemoveSeamFromImage(image [][]MatrixComponent, seam []int) [][]MatrixComponent {
+	// Setting up the bounds
 	N := len(image)
 	M := len(image[0])
 	newImage := make([][]MatrixComponent, N)
@@ -49,6 +51,7 @@ func RemoveSeamFromImage(image [][]MatrixComponent, seam []int) [][]MatrixCompon
 		seamJ := seam[i]
 		idx := 0
 		for j := 0; j < M; j++ {
+			// If it's not in the seam we copy it
 			if j != seamJ {
 				newImage[i][idx] = image[i][j]
 				idx++

@@ -70,19 +70,22 @@ func EcuRecurrencyMatrix(matrix [][]int, seam []int, Image [][]MatrixComponent) 
 	// Seting bounds
 	N := len(Image)
 	M := len(Image[0])
-	// Initialize the memomory matrix
+	// Initialize the memomory matrix and copy non affected pixel from the original recurrency matrix
 	memory := make([][]int, N)
 	for i := 0; i < N; i++ {
 		memory[i] = make([]int, M)
 		for j := 0; j < M; j++ {
 			memory[i][j] = -1
 		}
+		// Affected pixels are the ones inside the piramid geenrated from removing the top pixel
+		// If image is square this saves calculating half of the recurrency matrix at least
 		copy(memory[i][:max(0, seam[0]-i)], matrix[i][:max(0, seam[0]-i)])
 		copy(memory[i][min(M, seam[0]+1+i):M], matrix[i][min(M, seam[0]+1+i):M])
 	}
 	// Calculate recurrency values for the whole image
 	for i := 0; i < N; i++ {
 		//fmt.Println("Calculating recurrency matrix:", i, "/", N)
+		// If the value was copied it won't recalculate the energy
 		for j := max(0, seam[0]-i); j < min(M, seam[0]+1+i); j++ {
 			EcuRecurrency(i, j, &memory, Image)
 		}

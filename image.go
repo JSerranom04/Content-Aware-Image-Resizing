@@ -71,7 +71,7 @@ func printImage(data image.Image) {
 	}
 }
 
-// Given the new file to write "name" and the NRGBA values of the image it creates/overrides the new image
+// Given the new file to write "name" and the NRGBA values of the image it creates/ovewrites the new image
 func writeImage(name string, imageMatrix [][]MatrixComponent) {
 	// imageMatrix must be a rectangular 2d matrix
 	N := len(imageMatrix)
@@ -89,20 +89,20 @@ func writeImage(name string, imageMatrix [][]MatrixComponent) {
 			})
 		}
 	}
+	// Opening file descriptor
 	newImageFile, err := os.Create(name)
 	if err != nil {
 		fmt.Println("Error creating file")
 		os.Exit(1)
 	}
-
 	defer newImageFile.Close()
 	if err != nil {
 		fmt.Println("Error creating file")
 		os.Exit(1)
 	}
+	// It encodes the data into the file descriptor
 	err = png.Encode(newImageFile, img)
 	if err != nil {
-		newImageFile.Close()
 		fmt.Println("Error encoding new file", err)
 		os.Exit(1)
 	}
