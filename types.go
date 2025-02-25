@@ -7,3 +7,7 @@ type MatrixComponent struct {
 	brightness int
 	energy     int
 }
+
+type coordinate struct {
+	x, y int
+}

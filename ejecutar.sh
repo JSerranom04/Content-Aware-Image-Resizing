@@ -10,7 +10,7 @@ fi
 mkdir -p "$3"
 
 # Compilar el programa
-go build -o costuras *.go
+go build -o costuras *.go || exit
 
 # Captura el tiempo inicial en milisegundos
 start=$(date +%s%3N) 
