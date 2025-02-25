@@ -18,7 +18,7 @@ func EcuRecurrency(i int, j int, memory *[][]int, Image [][]MatrixComponent) int
 	if (*memory)[i][j] != -1 {
 		return (*memory)[i][j]
 	}
-	ePixel := PixelEnergy(i, j, Image)
+	ePixel := Image[i][j].energy
 	// Base case, pixel is on top row
 	if i == 0 {
 		return ePixel

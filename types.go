@@ -5,4 +5,5 @@ package main
 type MatrixComponent struct {
 	r, g, b, a int
 	brightness int
+	energy     int
 }

@@ -37,8 +37,13 @@ func main() {
 	N := len(imageMatrix)
 	M := len(imageMatrix[0])
 
-	recurrencyMatrix := EcuRecurrencyMatrixInitial(imageMatrix)
+	// Initial calculation of energy
+	calculateEnergyOfImageInitial(imageMatrix)
 	log.Printf("Energy matrix calculated")
+
+	// Initial calculation of recurrency matrix
+	recurrencyMatrix := EcuRecurrencyMatrixInitial(imageMatrix)
+	log.Printf("Recurrency matrix calculated")
 
 	// Process all seams
 	for i := 0; i < seamNumber; i++ {
@@ -50,8 +55,10 @@ func main() {
 		//log.Printf("Seam removed. Current dimensions: %dx%d", len(imageMatrix), len(imageMatrix[0]))
 
 		if i < seamNumber-1 {
+			// Recalculate the energy of the pixels that had their neighbours changed
+			calculateEnergyOfImage(imageMatrix, seam)
+			// Recalculate the recurrency value for all pixels under the piramid
 			recurrencyMatrix = EcuRecurrencyMatrix(recurrencyMatrix, seam, imageMatrix)
-			//recurrencyMatrix = EcuRecurrencyMatrixInitial(imageMatrix)
 		}
 	}
 

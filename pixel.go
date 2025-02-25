@@ -61,3 +61,29 @@ func PixelEnergy(i int, j int, Image [][]MatrixComponent) int {
 func PixelBrightness(i int, j int, image [][]MatrixComponent) int {
 	return image[i][j].r + image[i][j].g + image[i][j].b
 }
+
+// Calculates the energy value for all pixels in "image" and stores it in "image"
+func calculateEnergyOfImageInitial(image [][]MatrixComponent) {
+	N := len(image)
+	M := len(image[0])
+	for i := 0; i < N; i++ {
+		for j := 0; j < M; j++ {
+			image[i][j].energy = PixelEnergy(i, j, image)
+		}
+	}
+}
+
+// Calculates the energy value for all pixels that are touching the "seam" and stores it in "image"
+func calculateEnergyOfImage(image [][]MatrixComponent, seam []int) {
+	M := len(image[0])
+	for i, v := range seam {
+		// Left pixel of the one removed
+		if v > 0 {
+			image[i][v-1].energy = PixelEnergy(i, v-1, image)
+		}
+		// Right pixel of the one removed
+		if v < M-1 {
+			image[i][v].energy = PixelEnergy(i, v, image)
+		}
+	}
+}
