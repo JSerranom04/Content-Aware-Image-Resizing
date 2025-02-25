@@ -82,12 +82,30 @@ func EcuRecurrencyMatrix(matrix [][]int, seam []int, Image [][]MatrixComponent) 
 		copy(memory[i][:max(0, seam[0]-i)], matrix[i][:max(0, seam[0]-i)])
 		copy(memory[i][min(M, seam[0]+1+i):M], matrix[i][min(M, seam[0]+1+i):M])
 	}
+
+	// Concurrency setup
+	job := make(chan coordinate, N*M+1)
+	jobDone := make(chan bool, N*M+1)
+
+	for i := 0; i < NJOBS; i++ {
+		go func(job chan coordinate, jobDone chan bool, memory [][]int, Image [][]MatrixComponent) {
+			for {
+				newJob := <-job
+				EcuRecurrency(newJob.x, newJob.y, &memory, Image)
+				jobDone <- true
+			}
+		}(job, jobDone, memory, Image)
+	}
+
 	// Calculate recurrency values for the whole image
 	for i := 0; i < N; i++ {
 		//fmt.Println("Calculating recurrency matrix:", i, "/", N)
 		// If the value was copied it won't recalculate the energy
 		for j := max(0, seam[0]-i); j < min(M, seam[0]+1+i); j++ {
-			EcuRecurrency(i, j, &memory, Image)
+			job <- coordinate{i, j}
+		}
+		for j := 0; j < min(M, seam[0]+1+i)-1-max(0, seam[0]-i); j++ {
+			<-jobDone
 		}
 	}
 	return memory

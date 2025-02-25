@@ -8,6 +8,8 @@ import (
 	"strconv"
 )
 
+const NJOBS = 1
+
 func main() {
 	log.SetFlags(log.Lshortfile | log.LstdFlags)
 

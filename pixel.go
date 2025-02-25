@@ -66,10 +66,28 @@ func PixelBrightness(i int, j int, image [][]MatrixComponent) int {
 func calculateEnergyOfImageInitial(image [][]MatrixComponent) {
 	N := len(image)
 	M := len(image[0])
+
+	// Concurrency setup
+	ejob := make(chan coordinate, N*M+1)
+	ejobDone := make(chan bool, N*M+1)
+
+	for i := 0; i < NJOBS; i++ {
+		go func(ejob chan coordinate, ejobDone chan bool, image [][]MatrixComponent) {
+			for {
+				newJob := <-ejob
+				image[newJob.x][newJob.y].energy = PixelEnergy(newJob.x, newJob.y, image)
+				ejobDone <- true
+			}
+		}(ejob, ejobDone, image)
+	}
+
 	for i := 0; i < N; i++ {
 		for j := 0; j < M; j++ {
-			image[i][j].energy = PixelEnergy(i, j, image)
+			ejob <- coordinate{i, j}
 		}
+	}
+	for i := 0; i < N*M; i++ {
+		<-ejobDone
 	}
 }
 
