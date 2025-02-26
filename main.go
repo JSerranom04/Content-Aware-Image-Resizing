@@ -5,11 +5,16 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 )
 
 func main() {
+	// Configure the number of cores to use
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	
 	log.SetFlags(log.Lshortfile | log.LstdFlags)
+	log.Printf("Running with %d CPU cores", runtime.NumCPU())
 
 	if len(os.Args) != 4 {
 		fmt.Println("Usage: costuras <number_of_seams> <input_file> <results_directory>")
@@ -37,11 +42,11 @@ func main() {
 	N := len(imageMatrix)
 	M := len(imageMatrix[0])
 
-	// Initial calculation of energy
+	// Initial calculation of energy (parallelized)
 	calculateEnergyOfImageInitial(imageMatrix)
 	log.Printf("Energy matrix calculated")
 
-	// Initial calculation of recurrency matrix
+	// Initial calculation of recurrency matrix (parallelized)
 	recurrencyMatrix := EcuRecurrencyMatrixInitial(imageMatrix)
 	log.Printf("Recurrency matrix calculated")
 
@@ -52,12 +57,11 @@ func main() {
 		seam := FindMinSeam(recurrencyMatrix)
 
 		imageMatrix = RemoveSeamFromImage(imageMatrix, seam)
-		//log.Printf("Seam removed. Current dimensions: %dx%d", len(imageMatrix), len(imageMatrix[0]))
 
 		if i < seamNumber-1 {
-			// Recalculate the energy of the pixels that had their neighbours changed
+			// Recalculate the energy of the pixels that had their neighbours changed (parallelized)
 			calculateEnergyOfImage(imageMatrix, seam)
-			// Recalculate the recurrency value for all pixels under the piramid
+			// Recalculate the recurrency value for all pixels under the pyramid (parallelized)
 			recurrencyMatrix = EcuRecurrencyMatrix(recurrencyMatrix, seam, imageMatrix)
 		}
 	}

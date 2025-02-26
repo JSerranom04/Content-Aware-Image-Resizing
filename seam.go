@@ -1,5 +1,9 @@
 package main
 
+import (
+	"sync"
+)
+
 // FindMinSeam finds the minimum seam in the energy matrix
 // It returns the index of the pixel in each row that are in the seam
 func FindMinSeam(energyMatrix [][]int) []int {
@@ -21,8 +25,8 @@ func FindMinSeam(energyMatrix [][]int) []int {
 	// Reconstruct the path upwards
 	for i := N - 2; i >= 0; i-- {
 		j := seam[i+1]
-		minVal = energyMatrix[i][j]
-		minIdx = j
+		minVal := energyMatrix[i][j]
+		minIdx := j
 
 		// Check the three possible upper neighbors
 		if j > 0 && energyMatrix[i][j-1] < minVal {
@@ -45,19 +49,27 @@ func RemoveSeamFromImage(image [][]MatrixComponent, seam []int) [][]MatrixCompon
 	N := len(image)
 	M := len(image[0])
 	newImage := make([][]MatrixComponent, N)
-
+	
+	var wg sync.WaitGroup
+	
+	// Process each row in parallel
 	for i := 0; i < N; i++ {
-		newImage[i] = make([]MatrixComponent, M-1)
-		seamJ := seam[i]
-		idx := 0
-		for j := 0; j < M; j++ {
-			// If it's not in the seam we copy it
-			if j != seamJ {
-				newImage[i][idx] = image[i][j]
-				idx++
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			newImage[i] = make([]MatrixComponent, M-1)
+			seamJ := seam[i]
+			idx := 0
+			for j := 0; j < M; j++ {
+				// If it's not in the seam we copy it
+				if j != seamJ {
+					newImage[i][idx] = image[i][j]
+					idx++
+				}
 			}
-		}
+		}(i)
 	}
+	wg.Wait()
 
 	return newImage
 }
